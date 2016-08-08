@@ -93,7 +93,7 @@ You have to make sure that your **settings.py** is already set all setting with 
 
 If your project name is not **website**, this image will not work properly.
 
-you need modify the setting of **uwsgi.ini** in your container:
+you need to modify the setting of **uwsgi.ini** in your container:
 
 ```
 sudo docker exec $CONTAINER_ID sed -i "s|module=website.wsgi:application|module=$PROJECT_NAME.wsgi:application|g" /home/django/uwsgi.ini
