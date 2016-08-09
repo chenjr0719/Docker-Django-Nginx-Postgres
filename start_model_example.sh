@@ -16,6 +16,10 @@ if [ -z "$SETTING_PATH" ] ; then
 
     SETTING_PATH=`find /home/django/ -name settings.py`
 
+fi
+
+if [ ! -f /home/django/password.txt ] ; then
+
     # Start Postgres
     /etc/init.d/postgresql start & sleep 10s
 
