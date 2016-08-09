@@ -20,7 +20,7 @@ else
 
     # Backup data from SQLite
     if [ -f /home/django/website/db.sqlite3 ] ; then
-        python3 /home/django/website/manage.py dumpdata -e sessions -e admin -e contenttypes -e auth.Permission -e authtoken --natural > /home/django/dump.json
+        python3 /home/django/website/manage.py dumpdata -e sessions -e admin -e contenttypes -e auth --natural-primary --natural-foreign --indent=4 > /home/django/dump.json
     fi
 
 fi
@@ -60,15 +60,15 @@ if [ ! -f /home/django/password.txt ] ; then
     # Modify static files setting
     sed -i "s|STATIC_URL = '/static/'|STATIC_URL = '/static/'\n\nSTATIC_ROOT = os.path.join(BASE_DIR, 'static')|g" $SETTING_PATH
 
-    if [ -f /home/django/dump.json ] ; then
-        python3 /home/django/website/manage.py loaddata /home/django/dump.json
-    fi
-
     # Django setting
     python3 /home/django/website/manage.py makemigrations
     python3 /home/django/website/manage.py migrate
     echo yes | python3 /home/django/website/manage.py collectstatic
     echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', '$DJANGO_ADMIN_PASSWORD')" | python3 /home/django/website/manage.py shell
+
+    if [ -f /home/django/dump.json ] ; then
+        python3 /home/django/website/manage.py loaddata /home/django/dump.json
+    fi
 
     /etc/init.d/postgresql stop
 
