@@ -20,7 +20,7 @@ else
 
     # Backup data from SQLite
     if [ -f /home/django/website/db.sqlite3 ] ; then
-        python3 /home/django/website/manage.py dumpdata --natural > /home/django/dump.json
+        python3 /home/django/website/manage.py dumpdata -e sessions -e admin -e contenttypes -e auth.Permission -e authtoken --natural > /home/django/dump.json
     fi
 
 fi
