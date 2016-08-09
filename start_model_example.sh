@@ -10,9 +10,15 @@ if [ -z "$SETTING_PATH" ] ; then
 
     SETTING_PATH=`find /home/django/ -name settings.py`
 
-elif [ -f /home/django/website/db.sqlite3 ] ; then
+else
 
-    python3 /home/django/website/manage.py dumpdata > /home/django/dump.json
+    if [ -f /home/django/website/requirements.txt ]; then
+        pip3 install -r /home/django/website/requirements.txt
+    fi
+
+    if [ -f /home/django/website/db.sqlite3 ] ; then
+        python3 /home/django/website/manage.py dumpdata > /home/django/dump.json
+    fi
 
 fi
 
@@ -58,9 +64,7 @@ if [ ! -f /home/django/password.txt ] ; then
     echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', '$DJANGO_ADMIN_PASSWORD')" | python3 /home/django/website/manage.py shell
 
     if [ -f /home/django/dump.json ] ; then
-
         python3 /home/django/website/manage.py loaddata /home/django/dump.json
-
     fi
 
     /etc/init.d/postgresql stop
