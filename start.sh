@@ -28,7 +28,7 @@ fi
 if [ ! -f /home/django/password.txt ] ; then
 
     # Start Postgres
-    /etc/init.d/postgresql start & sleep 10s
+    /etc/init.d/postgresql start & sleep 5s
 
     # Set password
     POSTGRES_DJANGO_PASSWORD=`pwgen -c -n -1 12`
@@ -66,8 +66,11 @@ if [ ! -f /home/django/password.txt ] ; then
     echo yes | python3 /home/django/website/manage.py collectstatic
     echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', '$DJANGO_ADMIN_PASSWORD')" | python3 /home/django/website/manage.py shell
 
-    if [ -f /home/django/dump.json ] ; then
-        python3 /home/django/website/manage.py loaddata /home/django/dump.json
+    # Data migration
+    DUMP_PATH=`find /home/django/ -name dump.json`
+
+    if [ ! -z "$DUMP_PATH" ] ; then
+        python3 /home/django/website/manage.py loaddata $DUMP_PATH
     fi
 
     /etc/init.d/postgresql stop

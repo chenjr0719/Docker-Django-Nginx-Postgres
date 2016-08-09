@@ -35,7 +35,7 @@ COPY models.py /home/django/
 
 # Copy initialization scripts
 COPY init.sql /home/django/
-COPY start_model_example.sh /home/django/
+COPY start.sh /home/django/
 
 EXPOSE 80
-CMD ["/bin/bash", "/home/django/start_model_example.sh"]
+CMD ["/bin/bash", "/home/django/start.sh"]
