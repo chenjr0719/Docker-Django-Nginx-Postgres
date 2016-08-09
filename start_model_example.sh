@@ -8,13 +8,11 @@ if [ -z "$SETTING_PATH" ] ; then
     mkdir -p /home/django/website/
     django-admin startproject website /home/django/website
 
-    # Create model_example app
-    mkdir -p /home/django/website/model_example/
-    django-admin startapp model_example /home/django/website/model_example/
-    mv /home/django/admin.py /home/django/website/model_example/
-    mv /home/django/models.py /home/django/website/model_example/
-
     SETTING_PATH=`find /home/django/ -name settings.py`
+
+elif [ -f /home/django/website/db.sqlite3 ] ; then
+
+    python3 /home/django/website/manage.py dumpdata > /home/django/dump.json
 
 fi
 
@@ -37,6 +35,12 @@ if [ ! -f /home/django/password.txt ] ; then
     # install Postgres adapter for Python
     pip3 install psycopg2
 
+    # Create model_example app
+    mkdir -p /home/django/website/model_example/
+    django-admin startapp model_example /home/django/website/model_example/
+    mv /home/django/admin.py /home/django/website/model_example/
+    mv /home/django/models.py /home/django/website/model_example/
+
     # Add model_example app
     sed -i "s|'django.contrib.staticfiles'|'django.contrib.staticfiles',\n    'model_example'|g" $SETTING_PATH
 
@@ -52,6 +56,12 @@ if [ ! -f /home/django/password.txt ] ; then
     python3 /home/django/website/manage.py migrate
     echo yes | python3 /home/django/website/manage.py collectstatic
     echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', '$DJANGO_ADMIN_PASSWORD')" | python3 /home/django/website/manage.py shell
+
+    if [ -f /home/django/dump.json ] ; then
+
+        python3 /home/django/website/manage.py loaddata /home/django/dump.json
+
+    fi
 
     /etc/init.d/postgresql stop
 
